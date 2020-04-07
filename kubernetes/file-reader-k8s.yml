@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-reader-deployment
+spec:
+  selector:
+    matchLabels:
+      app: file-reader
+  template:
+    metadata:
+      labels:
+        app: file-reader
+        postgres-net: "true"
+        kafka-net: "true"
+    spec:
+      containers:
+      - name: file-reader
+        image: vijaykdotcom/file-reader:latest
+        env:
+          - name: dbHost
+            value: postgres
+          - name: kafkaHost
+            value: kafka-service-internal
+          - name: kafkaPort
+            value: '29092'
+          - name: input-file.path
+            value: /input/Input.txt
+        volumeMounts:
+        - name: input-volume
+          mountPath: /input
+        - name: logs-volume
+          mountPath: /logs
+      volumes:
+      - name: input-volume
+        hostPath:
+          path: ./input
+          type: DirectoryOrCreate
+      - name: logs-volume
+        hostPath:
+          path: ./logs
+          type: DirectoryOrCreate

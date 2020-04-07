@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction-summary-deployment
+spec:
+  selector:
+    matchLabels:
+      app: transaction-summary
+  template:
+    metadata:
+      labels:
+        app: transaction-summary
+        postgres-net: "true"
+        kafka-net: "true"
+    spec:
+      containers:
+      - name: transaction-summary
+        image: vijaykdotcom/transaction-summary:latest
+        env:
+          - name: dbHost
+            value: postgres
+          - name: kafkaHost
+            value: kafka-service-internal
+          - name: kafkaPort
+            value: '29092'
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /logs
+      volumes:
+      - name: logs-volume
+        hostPath:
+          path: ./logs
+          type: DirectoryOrCreate
