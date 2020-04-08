@@ -1,0 +1,32 @@
+
+spring:
+  application:
+    name: Transactions Ingestor
+  profiles:
+    active: ${SPRING_PROFILE:dev}
+  kafka:
+    consumer:
+      bootstrap-servers: ${kafkaHost:localhost}:${kafkaPort:9092}
+      group-id: group_id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  jpa:
+    hibernate.ddlAuto: validate
+  datasource:
+    url: jdbc:postgresql://${dbHost:localhost}:${dbPort:5432}/postgres
+    username: ${dbUsername:postgres}
+    password: ${dbPassword:postgres}
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+logging:
+  file: /logs/transaction-summary.log
+
+transactions:
+  kafka-topic: transactions
+---
+spring:
+  profiles: dev
+  jpa:
+    hibernate.ddlAuto: create-drop

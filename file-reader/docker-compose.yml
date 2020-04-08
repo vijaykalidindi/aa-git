@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+
+  postgres:
+    image: postgres:12
+    ports:
+      - 54321:5432
+    expose:
+      - 5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - file-reader-net
+
+  file-reader:
+    image: vijaykdotcom/file-reader:latest
+    depends_on:
+      - postgres
+    volumes:
+      - "./input:/input"
+      - "./logs:/logs"
+    environment:
+      - dbHost=postgres
+      - kafkaHost=kafka
+      - kafkaPort=29092
+      - input-file.path=/input/Input.txt
+    networks:
+      - file-reader-net
+      - external-kafka-net
+
+networks:
+  file-reader-net:
+    name: file-reader-net
+    driver: bridge
+  external-kafka-net:
+    external: true
+    name: kafka-net

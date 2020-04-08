@@ -1,0 +1,37 @@
+## default connection pool
+spring:
+  application:
+    name: Transactions Ingestor
+  profiles:
+    active: ${SPRING_PROFILE:dev}
+  kafka:
+    producer:
+      bootstrap-servers: ${kafkaHost:localhost}:${kafkaPort:9092}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  jpa:
+    hibernate:
+      ddlAuto: validate
+  datasource:
+    url: jdbc:postgresql://${dbHost:localhost}:${dbPort:5432}/postgres
+    username: ${dbUsername:postgres}
+    password: ${dbPassword:postgres}
+    hikari:
+      connectionTimeout: 20000
+      maximumPoolSize: 5
+
+logging:
+  file: /logs/file-reader.log
+
+input-file:
+  path: Input.txt
+  process:
+    fixedDelay: 5000
+
+transactions:
+  kafka-topic: transactions
+---
+spring:
+  profiles: dev
+  jpa:
+    hibernate.ddlAuto: create-drop
